@@ -1,0 +1,12 @@
+{
+  "properties": [
+    {
+      "name": "user.security.key-store-password",
+      "description": "Password for key store."
+    },
+    {
+      "name": "user.security.key-store-name",
+      "description": "Name of key store."
+    }
+  ]
+}
