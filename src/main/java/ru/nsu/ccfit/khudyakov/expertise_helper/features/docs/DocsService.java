@@ -1,6 +1,7 @@
 package ru.nsu.ccfit.khudyakov.expertise_helper.features.docs;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import ru.nsu.ccfit.khudyakov.expertise_helper.docs.docx.act.Act;
 import ru.nsu.ccfit.khudyakov.expertise_helper.docs.docx.act.ActMapper;
@@ -19,7 +20,6 @@ import ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.total_payment.PageFacto
 import ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.total_payment.ProjectPaymentTemplateBuilder;
 import ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.total_payment.TotalPayment;
 import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.NotFoundException;
-import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.ServiceException;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.applications.entities.Application;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.docs.entities.ContractId;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.docs.entities.ExpertContract;
@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,13 +76,14 @@ public class DocsService {
 
     private final InvitationService invitationService;
 
+    private final MessageSource messageSource;
+
     public List<Expert> getExperts(UUID projectId) {
         return expertRepository.findInvolvedInProject(projectId);
     }
 
     public byte[] createTotalPaymentSheet(UUID projectId) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ServiceException("Проект не найден"));
+        Project project = projectRepository.findById(projectId).orElseThrow(NotFoundException::new);
 
         Map<Expert, List<Application>> expertsApplications = getExpertsApplications(project);
 
@@ -224,9 +226,14 @@ public class DocsService {
         try (ByteArrayOutputStream tempBos = byteArrayOutputStream;
              ZipOutputStream outputStream = new ZipOutputStream(tempBos)) {
 
-            zip(detailedPayment.getSheetBytes(), outputStream, "рассчет.xlsx");
-            zip(actBytes, outputStream, "акт.docx");
-            zip(contractBytes, outputStream, "договор.docx");
+            Locale locale = Locale.forLanguageTag("ru");
+
+            zip(detailedPayment.getSheetBytes(),
+                    outputStream,
+                    messageSource.getMessage("docs.file.name.payment", null, locale));
+
+            zip(actBytes, outputStream, messageSource.getMessage("docs.file.name.act", null, locale));
+            zip(contractBytes, outputStream, messageSource.getMessage("docs.file.name.contract", null, locale));
 
         } catch (IOException e) {
             throw new IllegalStateException(e);

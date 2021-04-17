@@ -1,12 +1,11 @@
 package ru.nsu.ccfit.khudyakov.expertise_helper.features.docs;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,22 +15,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.ExpertService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.entities.Expert;
-import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.Invitation;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.ProjectService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.entities.Project;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.User;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.UserService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.security.users.CustomOAuth2User;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
 public class DocsController {
+
+    private final Locale locale = Locale.forLanguageTag("ru");
 
     private final DocsService docsService;
 
@@ -40,6 +38,8 @@ public class DocsController {
     private final UserService userService;
 
     private final ProjectService projectService;
+
+    private final MessageSource messageSource;
 
     @GetMapping("projects/{projectId}/docs")
     public String applications(@PathVariable UUID projectId, Model model) {
@@ -55,7 +55,9 @@ public class DocsController {
         byte[] paymentSheetBytes = docsService.createTotalPaymentSheet(projectId);
 
         ByteArrayResource resource = new ByteArrayResource(paymentSheetBytes);
-        HttpHeaders httpHeaders = getHttpHeaders("Рассчет " + project.getTitle() + ".xlsx");
+
+        String name = messageSource.getMessage("docs.file.name.payment.total", new Object[]{project.getTitle()}, locale);
+        HttpHeaders httpHeaders = getHttpHeaders(name);
 
         return ResponseEntity.ok()
                 .headers(httpHeaders)
@@ -69,7 +71,9 @@ public class DocsController {
         byte[] zipBytes = docsService.getDocumentsAsZipArchive(projectId, expertId);
 
         ByteArrayResource resource = new ByteArrayResource(zipBytes);
-        HttpHeaders httpHeaders = getHttpHeaders("Документы " + expert.getName() + ".zip");
+
+        String name = messageSource.getMessage("docs.file.name.zip", new Object[]{expert.getName()}, locale);
+        HttpHeaders httpHeaders = getHttpHeaders(name);
 
         return ResponseEntity.ok()
                 .headers(httpHeaders)
