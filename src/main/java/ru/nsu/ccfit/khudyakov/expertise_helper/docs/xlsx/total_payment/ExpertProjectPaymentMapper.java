@@ -22,8 +22,8 @@ public abstract class ExpertProjectPaymentMapper {
     @Mapping(source = "expert.name", target = "name")
     @Mapping(source = "expert.degree", target = "academicDegree")
     @Mapping(source = "expert.scienceCategory", target = "scienceCategory")
-    @Mapping(source = "contract.number", target = "contractNumber")
-    @Mapping(source = "contract.date", target = "contractDate")
+    @Mapping(source = "contract.contractNumber", target = "contractNumber")
+    @Mapping(source = "contract.contractDate", target = "contractDate")
     @Mapping(source = "applications", target = "reportByGroups", qualifiedBy = ReportsMapping.class)
     public abstract ExpertProjectPayment map(Expert expert, List<Application> applications, ExpertContract contract);
 

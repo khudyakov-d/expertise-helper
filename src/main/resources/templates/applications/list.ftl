@@ -22,10 +22,13 @@
                         <#list applications as application>
                             <li class="list-group-item my-3">
                                 <h5 class="card-title">${application.topic}</h5>
-                                <p class="card-text">${application.organization}</p>
+
+                                <#assign count = applicationService.getCompletedInvitationCount(user, application.id)/>
+                                <p class="card-text">Экспертов найдено: ${count}/${requiredNumberExperts}</p>
+
                                 <a href="/projects/applications/${application.id}/invitations"
                                    class="btn btn-dark">
-                                    Приглашения
+                                    Просмотр
                                 </a>
                             </li>
                         </#list>

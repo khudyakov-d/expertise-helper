@@ -18,13 +18,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.nsu.ccfit.khudyakov.expertise_helper.docs.docx.subject_conclusion.SubjectConclusionDocument;
 import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.ServiceException;
-import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.ExpertService;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.applications.ApplicationService;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.applications.entities.Application;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.dtos.ExpertDto;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.entities.Expert;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.Invitation;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.User;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.UserService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.files.FileManager;
+import ru.nsu.ccfit.khudyakov.expertise_helper.recommendations.RecommendationService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.security.users.CustomOAuth2User;
 
 import java.io.File;
@@ -44,11 +46,15 @@ public class InvitationController {
 
     private final InvitationService invitationService;
 
-    private final ExpertService expertService;
+    private final ApplicationService applicationService;
+
+    private final RecommendationService recommendationService;
 
     @GetMapping("/projects/applications/{applicationId}/invitations/add")
     public String add(User user, @PathVariable UUID applicationId, Model model) {
-        List<Expert> experts = expertService.getExperts(user);
+        Application application = applicationService.findByUserAndId(user, applicationId);
+        List<Expert> experts = recommendationService.getExpertsSortedBySimilarity(user, application);
+
         model.addAttribute("experts", experts);
         model.addAttribute("expert_header", ExpertDto.getExpertFieldsNames());
         model.addAttribute("applicationId", applicationId);

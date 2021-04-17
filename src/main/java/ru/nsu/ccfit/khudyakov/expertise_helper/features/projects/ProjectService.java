@@ -80,7 +80,6 @@ public class ProjectService {
         return projectRepository.findByUserAndId(user, id).orElseThrow(NotFoundException::new);
     }
 
-
     public boolean existByUserAndId(User user, UUID id) {
         return projectRepository.existsByUserAndId(user, id);
     }

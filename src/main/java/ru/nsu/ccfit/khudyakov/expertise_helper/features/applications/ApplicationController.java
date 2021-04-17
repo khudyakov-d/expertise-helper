@@ -14,6 +14,9 @@ import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.ServiceException;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.applications.dtos.NewApplicationDto;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.applications.entities.Application;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.applications.mappers.ApplicationMapper;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.InvitationService;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.ProjectService;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.entities.Project;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.User;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.UserService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.security.users.CustomOAuth2User;
@@ -30,13 +33,22 @@ public class ApplicationController {
 
     private final UserService userService;
 
+    private final ProjectService projectService;
+
     private final ApplicationMapper applicationMapper;
 
     private final ApplicationService applicationService;
 
+
     @GetMapping("/projects/{projectId}/applications")
     public String getList(User user, @PathVariable UUID projectId, Model model) {
         List<Application> applicationList = applicationService.findAllByProjectId(user, projectId);
+
+        Project project = projectService.findByUserAndId(user, projectId);
+
+        model.addAttribute("requiredNumberExperts", project.getRequiredNumberExperts());
+        model.addAttribute("user", user);
+        model.addAttribute("applicationService", applicationService);
         model.addAttribute("applications", applicationMapper.toApplicationDto(applicationList));
         model.addAttribute("projectId", projectId);
 
@@ -71,6 +83,7 @@ public class ApplicationController {
 
         return "redirect:/projects/" + projectId + "/applications";
     }
+
 
     @ModelAttribute(value = "user", binding = false)
     public User getUser(@AuthenticationPrincipal CustomOAuth2User oAuth2User) {

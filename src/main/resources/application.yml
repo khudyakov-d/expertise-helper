@@ -58,7 +58,7 @@ spring:
     platform: postgres
     url: jdbc:postgresql://localhost/expertise_helper
     username: coordinator
-    password: qmy8aczf
+    password: ${POSTGRES_PASS}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -66,7 +66,7 @@ spring:
     generate-ddl: true
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
 
   flyway:
     enabled: false

@@ -127,7 +127,6 @@ public class InvitationStateMachineConfig extends EnumStateMachineConfigurerAdap
                 .target(CONCLUSION_GENERATED)
                 .event(SEND_INVITATION_RETRY)
 
-
                 .and()
                 .withExternal()
                 .source(INVITATION_EMAIL_SENT)

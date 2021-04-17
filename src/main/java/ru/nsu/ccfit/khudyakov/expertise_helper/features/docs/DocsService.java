@@ -18,16 +18,15 @@ import ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.total_payment.ExpertPro
 import ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.total_payment.PageFactor;
 import ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.total_payment.ProjectPaymentTemplateBuilder;
 import ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.total_payment.TotalPayment;
+import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.NotFoundException;
 import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.ServiceException;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.applications.entities.Application;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.docs.entities.ContractId;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.docs.entities.ExpertContract;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.ExpertRepository;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.entities.Expert;
-import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.InvitationRepository;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.InvitationService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.Invitation;
-import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.InvitationStatus;
-import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.InvitationStateMachineRepository;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.ProjectRepository;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.entities.Project;
 import ru.nsu.ccfit.khudyakov.expertise_helper.files.FileManager;
@@ -45,7 +44,6 @@ import java.util.zip.ZipOutputStream;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.InvitationState.EXPERT_CONCLUSION_UPLOADING;
 
 @Service
 @RequiredArgsConstructor
@@ -65,8 +63,6 @@ public class DocsService {
 
     private final ContractRepository contractRepository;
 
-    private final InvitationStateMachineRepository stateMachineRepository;
-
     private final ExpertProjectPaymentMapper expertProjectPaymentMapper;
 
     private final FileManager fileManager;
@@ -77,7 +73,7 @@ public class DocsService {
 
     private final ContractMapper contractMapper;
 
-    private final InvitationRepository invitationRepository;
+    private final InvitationService invitationService;
 
     public List<Expert> getExperts(UUID projectId) {
         return expertRepository.findInvolvedInProject(projectId);
@@ -129,30 +125,18 @@ public class DocsService {
     private Map<Expert, List<Application>> getExpertsApplications(Project project) {
         List<Expert> experts = expertRepository.findInvolvedInProject(project.getId());
 
-        return experts.stream().collect(toMap(e -> e, this::getExpertApplications));
+        return experts.stream()
+                .filter(e -> !e.getInvitations().isEmpty())
+                .collect(toMap(e -> e, this::getExpertApplications));
     }
 
     public List<Application> getExpertApplications(Expert e) {
         return e.getInvitations().stream()
-                .filter(this::isInvitationApproved)
+                .filter(invitationService::isInvitationApproved)
                 .map(Invitation::getApplication)
                 .collect(toList());
     }
 
-    private boolean isInvitationApproved(Invitation invitation) {
-        if (invitation.getStatus().equals(InvitationStatus.COMPLETED)) {
-            return true;
-        }
-
-        if (invitation.getStatus().equals(InvitationStatus.IN_PROCESS)) {
-            return stateMachineRepository.existsByMachineIdAndState(
-                    invitation.getId().toString(),
-                    EXPERT_CONCLUSION_UPLOADING.toString()
-            );
-        }
-
-        return false;
-    }
 
     private DetailedPaymentOutputData createDetailedPayment(ExpertContract expertContract) {
         Expert expert = expertContract.getExpert();
@@ -167,7 +151,7 @@ public class DocsService {
                 .collect(toList());
 
         DetailedPayment detailedPayment = new DetailedPayment();
-        detailedPayment.setNumber(expertContract.getNumber());
+        detailedPayment.setNumber(expertContract.getContractNumber());
         detailedPayment.setPayments(applicationPayments);
 
         return templateBuilder.toSheet(detailedPayment);
@@ -189,7 +173,7 @@ public class DocsService {
         List<Application> applications = getExpertApplications(expert);
 
         Act act = actMapper.map(
-                expertContract.getNumber(),
+                expertContract.getContractNumber(),
                 expert,
                 applications.size(),
                 outputData.getCost(),
@@ -211,7 +195,7 @@ public class DocsService {
         List<Application> applications = getExpertApplications(expert);
 
         Contract contract = contractMapper.map(
-                expertContract.getNumber(),
+                expertContract.getContractNumber(),
                 expert,
                 applications.size(),
                 outputData.getCost(),
@@ -227,22 +211,16 @@ public class DocsService {
     }
 
     public byte[] getDocumentsAsZipArchive(UUID projectId, UUID expertId) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ServiceException("Проект не найден"));
-
-        Expert expert = expertRepository.findById(expertId)
-                .orElseThrow(() -> new ServiceException("Эксперт не найден"));
+        Project project = projectRepository.findById(projectId).orElseThrow(NotFoundException::new);
+        Expert expert = expertRepository.findById(expertId).orElseThrow(NotFoundException::new);
 
         ExpertContract expertContract = getProjectContract(project, expert);
 
         DetailedPaymentOutputData detailedPayment = createDetailedPayment(expertContract);
-
         byte[] actBytes = createAct(detailedPayment, expertContract);
-
         byte[] contractBytes = createContract(detailedPayment, expertContract);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
         try (ByteArrayOutputStream tempBos = byteArrayOutputStream;
              ZipOutputStream outputStream = new ZipOutputStream(tempBos)) {
 
@@ -265,9 +243,5 @@ public class DocsService {
         outputStream.closeEntry();
     }
 
-    public Invitation getInitiationByExpertAndApplication(Expert expert, Application application) {
-        return invitationRepository.findByExpertAndApplication(expert, application)
-                .orElseThrow(IllegalStateException::new);
-    }
 
 }

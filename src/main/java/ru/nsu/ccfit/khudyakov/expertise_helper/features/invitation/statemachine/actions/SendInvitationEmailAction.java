@@ -18,8 +18,7 @@ import ru.nsu.ccfit.khudyakov.expertise_helper.files.FileManager;
 import ru.nsu.ccfit.khudyakov.expertise_helper.mail.MailService;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ import static ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statem
 @RequiredArgsConstructor
 public class SendInvitationEmailAction implements Action<InvitationState, InvitationEvent> {
 
-    private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final MessageSource messageSource;
 
@@ -51,7 +50,7 @@ public class SendInvitationEmailAction implements Action<InvitationState, Invita
 
         String subject = messageSource.getMessage("invitation.email.subject", null, locale);
         String text = messageSource.getMessage("invitation.email.text",
-                new Object[]{dateFormat.format(invitation.getDeadlineDate()), client.getPrincipalName()},
+                new Object[]{dateFormatter.format(invitation.getDeadlineDate()), client.getPrincipalName()},
                 locale);
 
         String application = messageSource.getMessage("invitation.email.application", null, locale);

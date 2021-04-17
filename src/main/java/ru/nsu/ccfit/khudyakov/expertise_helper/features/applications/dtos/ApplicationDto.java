@@ -13,6 +13,6 @@ public class ApplicationDto {
 
     private String organization;
 
-    private Integer pagesNumber;
+    private Integer pagesCount;
 
 }

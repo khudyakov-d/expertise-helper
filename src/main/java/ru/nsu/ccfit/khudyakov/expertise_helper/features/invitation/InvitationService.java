@@ -12,6 +12,7 @@ import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.ExpertService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.entities.Expert;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.Invitation;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.InvitationStatus;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.InvitationStateMachineRepository;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.User;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import static java.nio.file.Paths.get;
 import static java.time.LocalDate.now;
 import static ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.InvitationStatus.IN_PROCESS;
+import static ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.InvitationState.EXPERT_CONCLUSION_UPLOADING;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,8 @@ public class InvitationService {
     private final ApplicationService applicationService;
 
     private final ExpertService expertService;
+
+    private final InvitationStateMachineRepository stateMachineRepository;
 
     private String buildConclusionPath() {
         return get(CONCLUSIONS_DIR, now().toString(), UUID.randomUUID().toString() + ".docx").toString();
@@ -104,6 +108,30 @@ public class InvitationService {
 
         invitation.setStatus(invitationStatus);
         invitationRepository.save(invitation);
+    }
+
+    public boolean isInvitationApproved(Invitation invitation) {
+        if (invitation.getStatus().equals(InvitationStatus.COMPLETED)) {
+            return true;
+        }
+
+        if (invitation.getStatus().equals(InvitationStatus.IN_PROCESS)) {
+            return stateMachineRepository.existsByMachineIdAndState(
+                    invitation.getId().toString(),
+                    EXPERT_CONCLUSION_UPLOADING.toString()
+            );
+        }
+
+        return false;
+    }
+
+    public boolean isInvitationCompleted(Invitation invitation) {
+        return invitation.getStatus().equals(InvitationStatus.COMPLETED);
+    }
+
+    public Invitation getInitiationByExpertAndApplication(Expert expert, Application application) {
+        return invitationRepository.findByExpertAndApplication(expert, application)
+                .orElseThrow(IllegalStateException::new);
     }
 
 }

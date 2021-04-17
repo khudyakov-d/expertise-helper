@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -55,7 +56,7 @@ public class Expert {
 
     private String personalPhone;
 
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @ManyToOne
     private User user;

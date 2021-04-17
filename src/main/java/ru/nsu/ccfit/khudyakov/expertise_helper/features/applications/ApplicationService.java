@@ -6,6 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.NotFoundException;
 import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.ServiceException;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.applications.entities.Application;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.InvitationService;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.InvitationStatus;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.ProjectService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.entities.Project;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.User;
@@ -49,6 +51,15 @@ public class ApplicationService {
     public Application findByUserAndId(User user, UUID applicationId) {
         return applicationRepository.findByProjectUserAndId(user, applicationId)
                 .orElseThrow(NotFoundException::new);
+    }
+
+    public int getCompletedInvitationCount(User user, UUID applicationId) {
+        Application application = applicationRepository.findByProjectUserAndId(user, applicationId)
+                .orElseThrow(NotFoundException::new);
+
+        return (int) application.getInvitations().stream()
+                .filter(i -> i.getStatus().equals(InvitationStatus.COMPLETED))
+                .count();
     }
 
 }

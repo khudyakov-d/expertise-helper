@@ -26,8 +26,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class InvitationMachineController {
 
-    private final ExpertService expertService;
-
     private final UserService userService;
 
     private final InvitationMachineService invitationMachineService;

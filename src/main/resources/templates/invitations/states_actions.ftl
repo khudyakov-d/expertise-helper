@@ -69,6 +69,7 @@
 </#macro>
 
 <#macro invitation_email_sent invitation>
+    <p>Дедлайн: ${invitation.deadlineDate}</p>
     <form class="form-inline my-2">
         <input type="submit"
                formmethod="post"
