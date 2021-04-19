@@ -1,6 +1,8 @@
 package ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.nsu.ccfit.khudyakov.expertise_helper.files.FileManager;
 
@@ -9,7 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public abstract class SheetTemplateBuilder<T, S extends BuilderOutputData> {
+public abstract class SheetTemplateBuilder<T, S extends SheetTemplateBuilder.BuilderOutputData> {
 
     private final String templatePath;
 
@@ -45,4 +47,11 @@ public abstract class SheetTemplateBuilder<T, S extends BuilderOutputData> {
         }
     }
 
+    @Getter
+    @Setter
+    public static class BuilderOutputData {
+
+        private byte[] sheetBytes;
+
+    }
 }

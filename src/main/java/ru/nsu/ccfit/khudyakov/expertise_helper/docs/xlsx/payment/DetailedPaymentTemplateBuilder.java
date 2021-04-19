@@ -45,7 +45,6 @@ public class DetailedPaymentTemplateBuilder extends SheetTemplateBuilder<Detaile
 
     private void fillPayment(XSSFRow row, ApplicationPayment payment, XSSFCellStyle style) {
         List<Object> fields = payment.getFieldsAsList();
-
         for (int j = 0; j < fields.size(); j++) {
             XSSFCell rowCell = row.createCell(j + 1);
 

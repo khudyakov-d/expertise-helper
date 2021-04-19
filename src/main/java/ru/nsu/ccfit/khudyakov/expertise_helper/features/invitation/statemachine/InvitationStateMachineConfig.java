@@ -11,8 +11,8 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 import org.springframework.statemachine.persist.StateMachineRuntimePersister;
 import org.springframework.stereotype.Component;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.actions.ConclusionGenerateAction;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.actions.ExpertRejectAction;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.actions.ExpertIgnoreAction;
-import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.actions.ExpertNoAnswerAction;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.actions.SendInvitationEmailAction;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.actions.UploadConclusionAction;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.errors.ConclusionGenerateErrorAction;
@@ -41,9 +41,9 @@ public class InvitationStateMachineConfig extends EnumStateMachineConfigurerAdap
 
     private final UploadConclusionAction uploadConclusionAction;
 
-    private final ExpertNoAnswerAction expertNoAnswerAction;
-
     private final ExpertIgnoreAction expertIgnoreAction;
+
+    private final ExpertRejectAction expertRejectAction;
 
     private final StateMachineRuntimePersister<InvitationState, InvitationEvent, String> stateMachineRuntimePersister;
 
@@ -119,13 +119,13 @@ public class InvitationStateMachineConfig extends EnumStateMachineConfigurerAdap
                 .withExternal()
                 .source(INVITATION_EMAIL_SENDING)
                 .target(INVITATION_EMAIL_SENDING_ERROR)
-                .event(SEND_INVITATION_FAILURE)
+                .event(SEND_INVITATION_EMAIL_FAILURE)
 
                 .and()
                 .withExternal()
                 .source(INVITATION_EMAIL_SENDING_ERROR)
                 .target(CONCLUSION_GENERATED)
-                .event(SEND_INVITATION_RETRY)
+                .event(SEND_INVITATION_EMAIL_RETRY)
 
                 .and()
                 .withExternal()
@@ -144,14 +144,14 @@ public class InvitationStateMachineConfig extends EnumStateMachineConfigurerAdap
                 .source(INVITATION_DECISION_MAKING)
                 .target(EXPERT_NO_ANSWER)
                 .event(EXPERT_IGNORE)
-                .action(expertNoAnswerAction)
+                .action(expertIgnoreAction)
 
                 .and()
                 .withExternal()
                 .source(INVITATION_DECISION_MAKING)
                 .target(EXPERT_REJECTED)
                 .event(EXPERT_REJECT)
-                .action(expertIgnoreAction)
+                .action(expertRejectAction)
 
                 .and()
                 .withExternal()

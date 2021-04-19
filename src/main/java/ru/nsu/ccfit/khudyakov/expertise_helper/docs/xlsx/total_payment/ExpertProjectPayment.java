@@ -1,6 +1,7 @@
 package ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.total_payment;
 
 import lombok.Data;
+import org.springframework.data.domain.Page;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.entities.ExpertDegree;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.entities.ExpertScienceCategory;
 
@@ -33,7 +34,10 @@ public class ExpertProjectPayment {
                 academicDegree.getFactor(),
                 academicDegree.getCut()));
 
-        fields.addAll(reportByGroups.values());
+        for (PageFactor pageFactor : PageFactor.values()) {
+            fields.add(reportByGroups.get(pageFactor));
+        }
+
 
         return fields;
     }

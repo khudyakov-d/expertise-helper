@@ -131,7 +131,7 @@ public class InvitationService {
 
     public Invitation getInitiationByExpertAndApplication(Expert expert, Application application) {
         return invitationRepository.findByExpertAndApplication(expert, application)
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(NotFoundException::new);
     }
 
 }

@@ -11,7 +11,7 @@ public class SendInvitationEmailErrorAction implements Action<InvitationState, I
 
     @Override
     public void execute(StateContext<InvitationState, InvitationEvent> context) {
-        context.getStateMachine().sendEvent(InvitationEvent.SEND_INVITATION_FAILURE);
+        context.getStateMachine().sendEvent(InvitationEvent.SEND_INVITATION_EMAIL_FAILURE);
     }
 
 }

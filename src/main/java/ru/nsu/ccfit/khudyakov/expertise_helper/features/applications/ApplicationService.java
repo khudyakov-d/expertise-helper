@@ -40,17 +40,14 @@ public class ApplicationService {
         } catch (IOException e) {
             throw new ServiceException("application.add.error.unknown");
         }
-
         Project project = projectService.findByUserAndId(user, projectId);
         project.getApplications().add(application);
         application.setProject(project);
-
         applicationRepository.save(application);
     }
 
     public Application findByUserAndId(User user, UUID applicationId) {
-        return applicationRepository.findByProjectUserAndId(user, applicationId)
-                .orElseThrow(NotFoundException::new);
+        return applicationRepository.findByProjectUserAndId(user, applicationId).orElseThrow(NotFoundException::new);
     }
 
     public int getCompletedInvitationCount(User user, UUID applicationId) {
@@ -61,5 +58,4 @@ public class ApplicationService {
                 .filter(i -> i.getStatus().equals(InvitationStatus.COMPLETED))
                 .count();
     }
-
 }

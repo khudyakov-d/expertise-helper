@@ -4,7 +4,6 @@
             <#assign conclusionUrl  = "subject"/>
             <#break>
     </#switch>
-
     <form class="form-inline my-2">
         <input type="submit"
                formmethod="get"
@@ -126,4 +125,3 @@
         <button type="submit" class="btn btn-dark">Загрузить</button>
     </form>
 </#macro>
-

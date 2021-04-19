@@ -6,7 +6,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.nsu.ccfit.khudyakov.expertise_helper.docs.utils.CostFormatter;
-import ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.BuilderOutputData;
 import ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.SheetTemplateBuilder;
 import ru.nsu.ccfit.khudyakov.expertise_helper.files.FileManager;
 
@@ -18,7 +17,7 @@ import static ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.utils.CellStyleU
 import static ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.utils.CellStyleUtils.createNumericCellStyle;
 import static ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.utils.SheetUtils.*;
 
-public class ProjectPaymentTemplateBuilder extends SheetTemplateBuilder<TotalPayment, BuilderOutputData> {
+public class ProjectPaymentTemplateBuilder extends SheetTemplateBuilder<TotalPayment, SheetTemplateBuilder.BuilderOutputData> {
 
     private static final int BASE_COST_ROW = 0;
 

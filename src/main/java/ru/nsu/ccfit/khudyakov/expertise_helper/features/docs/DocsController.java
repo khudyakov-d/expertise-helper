@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.ExpertService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.entities.Expert;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.InvitationService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.ProjectService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.entities.Project;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.User;
@@ -41,9 +42,12 @@ public class DocsController {
 
     private final MessageSource messageSource;
 
+    private final InvitationService invitationService;
+
     @GetMapping("projects/{projectId}/docs")
     public String applications(@PathVariable UUID projectId, Model model) {
         model.addAttribute("projectId", projectId);
+        model.addAttribute("invitationService", invitationService);
         model.addAttribute("docsService", docsService);
 
         return "/docs/list";
@@ -65,7 +69,7 @@ public class DocsController {
     }
 
     @GetMapping("projects/{projectId}/docs/{expertId}")
-    public ResponseEntity<Resource> getTotalPayment(User user, @PathVariable UUID projectId, @PathVariable UUID expertId) {
+    public ResponseEntity<Resource> getDocs(User user, @PathVariable UUID projectId, @PathVariable UUID expertId) {
         Expert expert = expertService.findByUserAndId(user, expertId);
 
         byte[] zipBytes = docsService.getDocumentsAsZipArchive(projectId, expertId);

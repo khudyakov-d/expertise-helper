@@ -58,7 +58,6 @@ public class InvitationController {
         model.addAttribute("experts", experts);
         model.addAttribute("expert_header", ExpertDto.getExpertFieldsNames());
         model.addAttribute("applicationId", applicationId);
-
         return "/invitations/add";
     }
 
@@ -74,7 +73,6 @@ public class InvitationController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/projects/applications/" + applicationId + "/invitations/add";
         }
-
         return "redirect:/projects/applications/" + applicationId + "/invitations";
     }
 
@@ -127,5 +125,4 @@ public class InvitationController {
         }
         return null;
     }
-
 }

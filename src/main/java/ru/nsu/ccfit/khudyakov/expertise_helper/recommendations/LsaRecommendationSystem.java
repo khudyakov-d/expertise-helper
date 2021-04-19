@@ -36,11 +36,9 @@ public class LsaRecommendationSystem {
 
         for (int i = 0, docsSize = docs.size(); i < docsSize; ++i) {
             Doc doc = docs.get(i);
-
             if (doc.getDocTerms() != null) {
                 terms.addAll(doc.getDocTerms());
             }
-
             docsMap.put(doc.getID(), i);
         }
 
@@ -52,7 +50,6 @@ public class LsaRecommendationSystem {
 
     private void calcDocTF(Doc doc, RealMatrix matrix) {
         if (doc.getDocTerms() != null) {
-
             int i = docsMap.get(doc.getID());
             List<String> terms = doc.getDocTerms();
 
@@ -79,13 +76,10 @@ public class LsaRecommendationSystem {
 
         for (Map.Entry<String, Integer> termsEntry : termsMap.entrySet()) {
             int j = termsEntry.getValue();
-
             int count = 0;
-
             for (int i = 0, size = docsMap.size(); i < size; ++i) {
                 count = matrix.getEntry(i, j) > 0 ? count + 1 : count;
             }
-
             vector.setEntry(j, Math.log(docs.size() / (double) count));
         }
 
@@ -143,7 +137,6 @@ public class LsaRecommendationSystem {
         RealMatrix matrix = reduceMatrixFactors(decomposition);
 
         Map<UUID, Double> docsSimilarity = new HashMap<>();
-
         RealVector targetDocVector = matrix.getRowVector(docsMap.get(targetDocId));
 
         for (Map.Entry<UUID, Integer> docsEntry : docsMap.entrySet()) {
@@ -157,7 +150,6 @@ public class LsaRecommendationSystem {
                 docsSimilarity.put(docsEntry.getKey(), sim);
             }
         }
-
         return sortResult(docsSimilarity);
     }
 

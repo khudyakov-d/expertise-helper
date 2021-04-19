@@ -34,12 +34,10 @@ public class InvitationMachineController {
     public String getInvitations(User user, @PathVariable UUID applicationId, Model model) {
         model.addAttribute("invitationsInProcess",
                 invitationMachineService.getInProcessInvitations(user, applicationId));
-
         List<Invitation> invitations = invitationMachineService.getInvitations(user, applicationId);
 
         model.addAttribute("statuses", InvitationStatus.values());
         model.addAttribute("invitations", invitations);
-
         return "/invitations/list";
     }
 
@@ -129,5 +127,4 @@ public class InvitationMachineController {
         }
         return null;
     }
-
 }

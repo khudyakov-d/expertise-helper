@@ -25,7 +25,6 @@ import static ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statem
 @Service
 @RequiredArgsConstructor
 public class InvitationMachineService {
-
     private final InvitationService invitationService;
 
     private final StateMachineService<InvitationState, InvitationEvent> stateMachineService;
@@ -34,7 +33,7 @@ public class InvitationMachineService {
         return invitationService.getInvitation(user, invitationId);
     }
 
-    private synchronized StateMachine<InvitationState, InvitationEvent> getStateMachine(UUID invitationId) {
+    private StateMachine<InvitationState, InvitationEvent> getStateMachine(UUID invitationId) {
         return stateMachineService.acquireStateMachine(invitationId.toString());
     }
 
@@ -51,7 +50,7 @@ public class InvitationMachineService {
     }
 
     public List<Invitation> getInvitations(User user, UUID applicationId) {
-        return invitationService.getAllByApplicationId(user,applicationId);
+        return invitationService.getAllByApplicationId(user, applicationId);
     }
 
     public Map<Invitation, InvitationState> getInProcessInvitations(User user, UUID applicationId) {
@@ -86,7 +85,7 @@ public class InvitationMachineService {
     }
 
     public void sendInvitationEmailRetryEvent(UUID invitationId) {
-        sendEvent(invitationId, SEND_INVITATION_RETRY);
+        sendEvent(invitationId, SEND_INVITATION_EMAIL_RETRY);
     }
 
     public void sendInvitationEmailRepeatEvent(UUID invitationId) {
@@ -114,16 +113,13 @@ public class InvitationMachineService {
             if (file == null) {
                 return;
             }
-
             Message<InvitationEvent> message = MessageBuilder
                     .withPayload(EXPERT_RESULT_UPLOADED)
                     .setHeader(CONCLUSION_RESULT.toString(), file.getBytes())
                     .build();
-
             sendEvent(invitationId, message);
         } catch (IOException e) {
             throw new IllegalStateException();
         }
     }
-
 }

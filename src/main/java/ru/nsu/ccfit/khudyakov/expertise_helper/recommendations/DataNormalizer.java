@@ -7,29 +7,24 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Component
 public class DataNormalizer {
-    private static Set<String> stopWords;
+    private static final Set<String> stopWords;
 
     private static final Pattern specialSymbolsPattern = Pattern.compile("\\pP*\\d*");
 
     private static final Pattern spacesPattern = Pattern.compile("\\s+");
 
-    private static final SnowballStemmer stemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.RUSSIAN, 3);
+   private static final SnowballStemmer stemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.RUSSIAN, 3);
 
     static {
         stopWords = new HashSet<>();
         try {
             File file = new ClassPathResource("stop-word-russian.txt").getFile();
-            Files.lines(file.toPath()).forEach(s -> stopWords.add(s));
+            Files.lines(file.toPath()).forEach(stopWords::add);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,7 +50,7 @@ public class DataNormalizer {
 
     private List<String> removeStopWords(List<String> words) {
         if (words != null) {
-            words.removeIf(word -> stopWords.contains(word));
+            words.removeIf(stopWords::contains);
             return words;
         } else {
             return null;
@@ -77,5 +72,4 @@ public class DataNormalizer {
     public List<String> normalizeText(String text) {
         return stemWords(removeStopWords(splitText(removeSpecialSymbols(textToLowerCase(text)))));
     }
-
 }

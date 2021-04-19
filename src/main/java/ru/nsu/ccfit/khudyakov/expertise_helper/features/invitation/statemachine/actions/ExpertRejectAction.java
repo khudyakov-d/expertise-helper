@@ -9,18 +9,19 @@ import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.Invi
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.InvitationEvent;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.statemachine.InvitationState;
 
-import static ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.InvitationStatus.NO_ANSWER;
+import static ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.InvitationStatus.REJECTED;
 
 @Component
 @RequiredArgsConstructor
-public class ExpertNoAnswerAction implements Action<InvitationState, InvitationEvent> {
+public class ExpertRejectAction implements Action<InvitationState, InvitationEvent> {
+
 
     private final InvitationService invitationService;
 
     @Override
     public void execute(StateContext<InvitationState, InvitationEvent> context) {
         Invitation invitation = invitationService.getInvitation(context.getStateMachine().getId());
-        invitationService.changeInvitationStatus(invitation, NO_ANSWER);
+        invitationService.changeInvitationStatus(invitation, REJECTED);
     }
 
 }

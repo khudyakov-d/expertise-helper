@@ -63,7 +63,7 @@
                        class="btn btn-dark">
                         Просмотр заявки
                     </a>
-                    <#assign invitation = docsService.getInitiationByExpertAndApplication(expert, application)>
+                    <#assign invitation = invitationService.getInitiationByExpertAndApplication(expert, application)>
                     <a href="/projects/applications/invitations/${invitation.id}/conclusion/download"
                        class="btn btn-dark mr-2">
                         Скачать заключение
