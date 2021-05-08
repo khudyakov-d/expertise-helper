@@ -18,24 +18,24 @@
 
         <div class="row">
             <div class="col-xs-12 w-100">
-                <ul class="list-group w-100">
+                <div class="list-group w-100">
 
-                    <#list docsService.getExperts(projectId) as expert>
+                    <#list experts as expert>
                         <#if docsService.getExpertApplications(expert)?size gt 0>
-                            <li class="list-group-item my-3">
+                            <div class="list-group-item my-3">
                                 <div class="my-2">
                                     <h5 class="card-title">${expert.name!}</h5>
                                     <a href="http://localhost:8080/projects/${projectId}/docs/${expert.id}"
                                        class="btn btn-dark my-1">
                                         Скачать документы
                                     </a>
+                                    <@contract_data projectId expert/>
                                 </div>
-
                                 <@expert_applications expert/>
-                            </li>
+                            </div>
                         </#if>
                     </#list>
-                </ul>
+                </div>
             </div>
         </div>
 
@@ -72,4 +72,47 @@
             </tr>
         </#list>
     </table>
+</#macro>
+
+<#macro contract_data projectId expert>
+        <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#contract-${expert.id}">
+            Данные договора
+        </button>
+
+        <div class="modal fade" id="contract-${expert.id}" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" >
+                        <h5 class="modal-title">${expert.name}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/projects/${projectId}/docs/${expert.id}/contract"
+                              meth1od="post"
+                              class="form my-2">
+
+                            <div class="form-group row">
+                                <label for="contractDate" class="col-6 col-form-label">Дата договора</label>
+                                <div class="col-6">
+                                    <input id="contractDate" type="date" name="contractDate" required/>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="contractNumber" class="col-6 col-form-label">Номер договора</label>
+                                <div class="col-6">
+                                    <input id="contractNumber" type="text" name="contractNumber" required/>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+
+                            <button type="submit" class="btn btn-dark">Подтвердить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 </#macro>

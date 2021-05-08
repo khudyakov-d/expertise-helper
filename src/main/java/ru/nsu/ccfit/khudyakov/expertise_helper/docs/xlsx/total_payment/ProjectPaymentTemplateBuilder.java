@@ -75,7 +75,7 @@ public class ProjectPaymentTemplateBuilder extends SheetTemplateBuilder<TotalPay
             ExpertProjectPayment payment = payments.get(i);
             XSSFRow row = sheet.getRow(START_ROW + i);
 
-            fillPayment(i + 1, row, payment, borderCellStyle);
+            fillPayment(workbook, i + 1, row, payment, borderCellStyle);
             fillPaymentCost(sheet.getRow(PAGE_FACTOR_ROW), row, numericCellStyle);
             fillPaymentTotalCost(row, numericCellStyle);
         }
@@ -109,7 +109,11 @@ public class ProjectPaymentTemplateBuilder extends SheetTemplateBuilder<TotalPay
         setCellSumFormula(cell, formulas);
     }
 
-    private void fillPayment(int number, XSSFRow row, ExpertProjectPayment payment, XSSFCellStyle style) {
+    private void fillPayment(XSSFWorkbook workbook,
+                             int number,
+                             XSSFRow row,
+                             ExpertProjectPayment payment,
+                             XSSFCellStyle style) {
         List<Object> fields = payment.getFieldsAsList();
 
         XSSFCell rowCell = row.createCell(0);
@@ -120,9 +124,9 @@ public class ProjectPaymentTemplateBuilder extends SheetTemplateBuilder<TotalPay
             rowCell = row.createCell(j + 1);
 
             Object value = fields.get(j);
-            setCellValue(rowCell, value);
 
             rowCell.setCellStyle(style);
+            setCellValue(workbook, rowCell, value);
         }
     }
 

@@ -23,26 +23,30 @@ import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.NotFoundException;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.applications.entities.Application;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.docs.entities.ContractId;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.docs.entities.ExpertContract;
-import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.ExpertRepository;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.ExpertService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.entities.Expert;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.InvitationService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.invitation.entities.Invitation;
-import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.ProjectRepository;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.ProjectService;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.entities.Project;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.User;
 import ru.nsu.ccfit.khudyakov.expertise_helper.files.FileManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static java.util.stream.Collectors.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -58,9 +62,9 @@ public class DocsService {
     private static final String DETAILED_PAYMENT_TEMPLATE_PATH =
             Paths.get("payments/detailed_payment.xlsx").toString();
 
-    private final ExpertRepository expertRepository;
+    private final ProjectService projectService;
 
-    private final ProjectRepository projectRepository;
+    private final ExpertService expertService;
 
     private final ContractRepository contractRepository;
 
@@ -78,13 +82,7 @@ public class DocsService {
 
     private final MessageSource messageSource;
 
-    public List<Expert> getExperts(UUID projectId) {
-        return expertRepository.findInvolvedInProject(projectId);
-    }
-
-    public byte[] createTotalPaymentSheet(UUID projectId) {
-        Project project = projectRepository.findById(projectId).orElseThrow(NotFoundException::new);
-
+    public byte[] createTotalPaymentSheet(Project project) {
         Map<Expert, List<Application>> expertsApplications = getExpertsApplications(project);
 
         List<ExpertProjectPayment> projectPayments = new ArrayList<>();
@@ -105,13 +103,17 @@ public class DocsService {
         return projectPaymentTemplateBuilder.toSheet(totalPayment).getSheetBytes();
     }
 
-
     private ExpertContract getProjectContract(Project project, Expert expert) {
+        ContractId contractId = getContractId(project, expert);
+        Optional<ExpertContract> contract = contractRepository.findById(contractId);
+        return contract.orElseGet(() -> createExpertContract(expert, project));
+    }
+
+    private ContractId getContractId(Project project, Expert expert) {
         ContractId contractId = new ContractId();
         contractId.setExpertId(expert.getId());
         contractId.setProjectId(project.getId());
-        Optional<ExpertContract> contract = contractRepository.findById(contractId);
-        return contract.orElseGet(() -> createExpertContract(expert, project));
+        return contractId;
     }
 
     private ExpertContract createExpertContract(Expert expert, Project project) {
@@ -123,13 +125,15 @@ public class DocsService {
         return expertContract;
     }
 
-
     private Map<Expert, List<Application>> getExpertsApplications(Project project) {
-        List<Expert> experts = expertRepository.findInvolvedInProject(project.getId());
+        List<Expert> experts = expertService.findInvolvedInProject(project.getId());
 
         return experts.stream()
-                .filter(e -> !e.getInvitations().isEmpty())
-                .collect(toMap(e -> e, this::getExpertApplications));
+                .collect(toMap(e -> e, this::getExpertApplications))
+                .entrySet()
+                .stream()
+                .filter(entry -> !entry.getValue().isEmpty())
+                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public List<Application> getExpertApplications(Expert e) {
@@ -138,7 +142,6 @@ public class DocsService {
                 .map(Invitation::getApplication)
                 .collect(toList());
     }
-
 
     private DetailedPaymentOutputData createDetailedPayment(ExpertContract expertContract) {
         Expert expert = expertContract.getExpert();
@@ -190,7 +193,7 @@ public class DocsService {
         return actTemplateBuilder.saveToDocx(act);
     }
 
-    private byte[] createContract(DetailedPaymentOutputData outputData, ExpertContract expertContract) {
+    private byte[] setContractData(DetailedPaymentOutputData outputData, ExpertContract expertContract) {
         Expert expert = expertContract.getExpert();
         Project project = expertContract.getProject();
 
@@ -212,15 +215,14 @@ public class DocsService {
         return contractTemplateBuilder.saveToDocx(contract);
     }
 
-    public byte[] getDocumentsAsZipArchive(UUID projectId, UUID expertId) {
-        Project project = projectRepository.findById(projectId).orElseThrow(NotFoundException::new);
-        Expert expert = expertRepository.findById(expertId).orElseThrow(NotFoundException::new);
+    public byte[] getDocumentsAsZipArchive(User user, UUID projectId, Expert expert) {
+        Project project = projectService.findByUserAndId(user, projectId);
 
         ExpertContract expertContract = getProjectContract(project, expert);
 
         DetailedPaymentOutputData detailedPayment = createDetailedPayment(expertContract);
         byte[] actBytes = createAct(detailedPayment, expertContract);
-        byte[] contractBytes = createContract(detailedPayment, expertContract);
+        byte[] contractBytes = setContractData(detailedPayment, expertContract);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try (ByteArrayOutputStream tempBos = byteArrayOutputStream;
@@ -233,7 +235,9 @@ public class DocsService {
                     messageSource.getMessage("docs.file.name.payment", null, locale));
 
             zip(actBytes, outputStream, messageSource.getMessage("docs.file.name.act", null, locale));
-            zip(contractBytes, outputStream, messageSource.getMessage("docs.file.name.contract", null, locale));
+            zip(contractBytes, outputStream, messageSource.getMessage("docs.file.name.contract",
+                    null,
+                    locale));
 
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -250,5 +254,18 @@ public class DocsService {
         outputStream.closeEntry();
     }
 
+    public void setContractData(User user, UUID projectId, UUID expertId, LocalDate date, String number) {
+        Expert expert = expertService.findByUserAndId(user, expertId);
+        Project project = projectService.findByUserAndId(user, projectId);
+
+        ContractId contractId = getContractId(project, expert);
+        ExpertContract expertContract = contractRepository.findById(contractId)
+                .orElseThrow(NotFoundException::new);
+
+        expertContract.setContractNumber(number);
+        expertContract.setContractDate(date);
+
+        contractRepository.save(expertContract);
+    }
 
 }

@@ -1,5 +1,6 @@
 package ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.payment;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -43,13 +44,13 @@ public class DetailedPaymentTemplateBuilder extends SheetTemplateBuilder<Detaile
         cell.setCellValue(number);
     }
 
-    private void fillPayment(XSSFRow row, ApplicationPayment payment, XSSFCellStyle style) {
+    private void fillPayment(XSSFWorkbook workbook, XSSFRow row, ApplicationPayment payment, XSSFCellStyle style) {
         List<Object> fields = payment.getFieldsAsList();
         for (int j = 0; j < fields.size(); j++) {
             XSSFCell rowCell = row.createCell(j + 1);
 
             Object value = fields.get(j);
-            setCellValue(rowCell, value);
+            setCellValue(workbook, rowCell, value);
 
             rowCell.setCellStyle(style);
         }
@@ -111,7 +112,7 @@ public class DetailedPaymentTemplateBuilder extends SheetTemplateBuilder<Detaile
 
             ApplicationPayment payment = payments.get(i);
             fillNumber(i + 1, row, borderCellStyle);
-            fillPayment(row, payment, borderCellStyle);
+            fillPayment(workbook, row, payment, borderCellStyle);
             fillPaymentCost(paymentCellCount, row, borderCellStyle);
         }
 

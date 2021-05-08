@@ -4,16 +4,22 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class SheetUtils {
 
-    public static void setCellValue(XSSFCell rowCell, Object value) {
+    public static void setCellValue(XSSFWorkbook workbook, XSSFCell rowCell, Object value) {
+        XSSFCellStyle dateCellStyle = CellStyleUtils.createDateCellStyle(workbook, rowCell.getCellStyle());
+
         if (value instanceof String) {
             rowCell.setCellValue((String) value);
         } else if (value instanceof Double) {
@@ -21,8 +27,15 @@ public class SheetUtils {
         } else if (value instanceof Integer) {
             rowCell.setCellValue((Integer) value);
         } else if (value instanceof LocalDate) {
-            rowCell.setCellValue((LocalDate) value);
+            rowCell.setCellValue(convertToDateViaInstant((LocalDate) value));
+            rowCell.setCellStyle(dateCellStyle);
         }
+    }
+
+    private static Date convertToDateViaInstant(LocalDate dateToConvert) {
+        return Date.from(dateToConvert.atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
     }
 
     public static void evaluateFormulas(XSSFWorkbook workbook) {

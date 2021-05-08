@@ -36,5 +36,4 @@ public abstract class ActMapper {
         act.setContractorInitials(formatContractorInitials(act.getContractorName()));
     }
 
-
 }

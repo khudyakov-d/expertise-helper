@@ -34,11 +34,6 @@ public class MailService {
         }
     }
 
-    public void sendTestMessage(User user, String to, OAuth2AuthorizedClient client) {
-        CustomMailSender mailSender = getMailSender(user, client);
-        mailSender.sendEmail(user.getEmail(), to, "тест", "тест", new HashMap<>());
-    }
-
     public void sendMessage(User user,
                             OAuth2AuthorizedClient client,
                             String to,

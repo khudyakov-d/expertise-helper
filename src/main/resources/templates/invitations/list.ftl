@@ -34,13 +34,13 @@
                                                 <@actions.conclusion_generating_error invitation/>
                                                 <#break>
                                             <#case "CONCLUSION_GENERATED">
-                                                <@actions.conclusion_generated invitation/>
+                                                <@actions.conclusion_generated invitation sendingDisabled/>
                                                 <#break>
                                             <#case "INVITATION_EMAIL_SENDING_ERROR">
                                                 <@actions.invitation_email_sending_error invitation/>
                                                 <#break>
                                             <#case "INVITATION_EMAIL_SENT">
-                                                <@actions.invitation_email_sent invitation/>
+                                                <@actions.invitation_email_sent invitation />
                                                 <#break>
                                             <#case "INVITATION_DECISION_MAKING">
                                                 <@actions.invitation_decision_making invitation/>

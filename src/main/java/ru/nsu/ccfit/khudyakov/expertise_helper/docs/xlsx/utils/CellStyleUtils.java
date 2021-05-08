@@ -1,11 +1,21 @@
 package ru.nsu.ccfit.khudyakov.expertise_helper.docs.xlsx.utils;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class CellStyleUtils {
+
+    public static XSSFCellStyle createDateCellStyle(XSSFWorkbook workbook, XSSFCellStyle prevStyle) {
+        XSSFCellStyle style = workbook.createCellStyle();
+        style.cloneStyleFrom(prevStyle);
+        CreationHelper createHelper = workbook.getCreationHelper();
+        short format = createHelper.createDataFormat().getFormat("dd/mm/yy");
+        style.setDataFormat(format);
+        return style;
+    }
 
     public static XSSFCellStyle createNumericCellStyle(XSSFWorkbook workbook, XSSFCellStyle prevStyle) {
         XSSFCellStyle style = workbook.createCellStyle();

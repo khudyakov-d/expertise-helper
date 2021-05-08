@@ -71,9 +71,12 @@ public class ExpertService {
         return expertRepository.findByUser(user, pageable);
     }
 
-
     public List<Expert> getExperts(User user) {
         return expertRepository.findByUser(user);
+    }
+
+    public List<Expert> findInvolvedInProject(UUID projectId) {
+        return expertRepository.findInvolvedInProject(projectId);
     }
 
 }

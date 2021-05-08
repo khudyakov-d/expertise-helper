@@ -31,11 +31,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void updateMailPassword(User user, String password) {
-        user.setMailPassword(password);
-        userRepository.save(user);
-    }
-
     public User getByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(IllegalStateException::new);
     }

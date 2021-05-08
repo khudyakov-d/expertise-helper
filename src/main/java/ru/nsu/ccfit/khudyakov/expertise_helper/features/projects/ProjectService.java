@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.NotFoundException;
 import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.ServiceException;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.ExpertService;
+import ru.nsu.ccfit.khudyakov.expertise_helper.features.experts.entities.Expert;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.dtos.EditProjectDto;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.projects.entities.Project;
 import ru.nsu.ccfit.khudyakov.expertise_helper.features.users.User;
@@ -21,6 +23,8 @@ public class ProjectService {
     private final FileManager fileManager;
 
     private final ProjectRepository projectRepository;
+
+    private final ExpertService expertService;
 
     public void add(User user, Project project, MultipartFile act, MultipartFile contract, MultipartFile conclusion) {
         boolean existsByTitle = projectRepository.existsByTitleAndUser(project.getTitle(), user);
@@ -82,6 +86,14 @@ public class ProjectService {
 
     public boolean existByUserAndId(User user, UUID id) {
         return projectRepository.existsByUserAndId(user, id);
+    }
+
+    public List<Expert> getProjectExperts(User user, UUID projectId) {
+        boolean exist = existByUserAndId(user, projectId);
+        if (!exist) {
+            throw new NotFoundException();
+        }
+        return expertService.findInvolvedInProject(projectId);
     }
 
 }

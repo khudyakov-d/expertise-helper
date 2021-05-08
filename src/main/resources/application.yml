@@ -15,13 +15,11 @@ spring:
               - email
               - profile
               - https://www.googleapis.com/auth/gmail.send
-              - https://www.googleapis.com/auth/gmail.metadata
 
           yandex:
             clientId: ${YANDEX_CLIENT_ID}
             clientSecret: ${YANDEX_CLIENT_SECRET}
             scope:
-              - mail:smtp
               - login:birthday
               - login:email
               - login:info
@@ -49,7 +47,7 @@ spring:
             userInfoAuthenticationMethod: form
 
           yandex:
-            authorizationUri: https://oauth.yandex.ru/authorize
+            authorizationUri: https://oauth.yandex.ru/authorize?optional_scope=mail:smtp
             tokenUri: https://oauth.yandex.ru/token
             userInfoUri: https://login.yandex.ru/info
             userNameAttribute: login
@@ -66,7 +64,7 @@ spring:
     generate-ddl: true
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 
   flyway:
     enabled: false

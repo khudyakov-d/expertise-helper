@@ -8,13 +8,13 @@
         <input type="submit"
                formmethod="get"
                formaction="/projects/applications/invitations/${invitation.id}/${conclusionUrl}"
-               class="btn btn-dark mr-2"
+               class="btn btn-dark mr-4 my-2"
                value="Заполнить заключение">
 
         <input type="submit"
                formmethod="post"
                formaction="/projects/applications/invitations/${invitation.id}/events/generate-conclusion"
-               class="btn btn-dark ml-2"
+               class="btn btn-dark my-2"
                value="Продолжить">
 
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
@@ -32,24 +32,24 @@
     </form>
 </#macro>
 
-<#macro conclusion_generated invitation>
+<#macro conclusion_generated invitation isDisabled>
     <form class="form-inline my-2">
         <input type="submit"
                formmethod="get"
                formaction="/projects/applications/invitations/${invitation.id}/conclusion/download"
-               class="btn btn-dark mr-2"
+               class="btn btn-dark mr-4 my-2"
                value="Скачать заключение">
 
         <input type="submit"
                formmethod="post"
                formaction="/projects/applications/invitations/${invitation.id}/events/email-send"
-               class="btn btn-dark mx-2"
+               class="btn btn-dark mr-4 my-2"
                value="Отправить приглашение">
 
         <input type="submit"
                formmethod="post"
                formaction="/projects/applications/invitations/${invitation.id}/events/email-skip"
-               class="btn btn-dark ml-2"
+               class="btn btn-dark my-2"
                value="Отправить самостоятельно">
 
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
@@ -61,7 +61,7 @@
         <input type="submit"
                formmethod="post"
                formaction="/projects/applications/invitations/${invitation.id}/events/email-retry"
-               class="btn btn-dark"
+               class="btn btn-dark my-2"
                value="Обновить">
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
     </form>
@@ -73,13 +73,13 @@
         <input type="submit"
                formmethod="post"
                formaction="/projects/applications/invitations/${invitation.id}/events/email-repeat"
-               class="btn btn-dark mr-2"
+               class="btn btn-dark mr-4 my-2"
                value="Повторить приглашение">
 
         <input type="submit"
                formmethod="post"
                formaction="/projects/applications/invitations/${invitation.id}/events/email-continue"
-               class="btn btn-dark ml-2"
+               class="btn btn-dark my-2"
                value="Продолжить">
 
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
@@ -91,19 +91,19 @@
         <input type="submit"
                formmethod="post"
                formaction="/projects/applications/invitations/${invitation.id}/events/expert-reject"
-               class="btn btn-dark mr-2"
+               class="btn btn-dark mr-4 my-2"
                value="Эксперт проигнорировал">
 
         <input type="submit"
                formmethod="post"
                formaction="/projects/applications/invitations/${invitation.id}/events/expert-ignore"
-               class="btn btn-dark mx-2"
+               class="btn btn-dark  mr-4 my-2"
                value="Эксперт отклонил">
 
         <input type="submit"
                formmethod="post"
                formaction="/projects/applications/invitations/${invitation.id}/events/expert-uploading-result"
-               class="btn btn-dark ml-2"
+               class="btn btn-dark my-2"
                value="Эксперт согласился">
 
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>

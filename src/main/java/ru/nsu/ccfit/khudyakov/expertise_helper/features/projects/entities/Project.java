@@ -45,7 +45,7 @@ public class Project {
     private String actPath;
 
     @NotBlank
-    private String contractPath;
+        private String contractPath;
 
     @NotBlank
     private String conclusionPath;
