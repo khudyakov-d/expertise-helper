@@ -34,7 +34,7 @@
                                                 <@actions.conclusion_generating_error invitation/>
                                                 <#break>
                                             <#case "CONCLUSION_GENERATED">
-                                                <@actions.conclusion_generated invitation sendingDisabled/>
+                                                <@actions.conclusion_generated invitation/>
                                                 <#break>
                                             <#case "INVITATION_EMAIL_SENDING_ERROR">
                                                 <@actions.invitation_email_sending_error invitation/>

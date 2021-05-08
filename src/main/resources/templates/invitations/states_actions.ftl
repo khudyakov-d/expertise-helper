@@ -32,7 +32,7 @@
     </form>
 </#macro>
 
-<#macro conclusion_generated invitation isDisabled>
+<#macro conclusion_generated invitation>
     <form class="form-inline my-2">
         <input type="submit"
                formmethod="get"
