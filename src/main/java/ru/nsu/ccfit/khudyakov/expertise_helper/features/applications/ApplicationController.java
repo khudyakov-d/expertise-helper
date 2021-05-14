@@ -70,7 +70,8 @@ public class ApplicationController {
 
         if (bindingResult.hasErrors()) {
             getErrors(bindingResult).forEach(redirectAttributes::addFlashAttribute);
-            return "redirect:/applications/add";
+            redirectAttributes.addFlashAttribute("application", newApplicationDto);
+            return "redirect:/projects/" + projectId +  "/applications/add";
         }
 
         Application application = applicationMapper.toApplication(newApplicationDto);

@@ -26,7 +26,6 @@ public class ContractTemplateBuilder extends DocxTemplateBuilder<Contract> {
             jaxbMarshaller = jaxbContext.createMarshaller();
             jaxbMarshaller.setProperty(JAXB_FORMATTED_OUTPUT, true);
         } catch (JAXBException e) {
-            e.printStackTrace();
             throw new IllegalStateException(e);
         }
     }

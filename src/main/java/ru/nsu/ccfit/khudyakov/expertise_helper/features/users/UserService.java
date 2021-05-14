@@ -2,6 +2,7 @@ package ru.nsu.ccfit.khudyakov.expertise_helper.features.users;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.nsu.ccfit.khudyakov.expertise_helper.exceptions.NotFoundException;
 
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ public class UserService {
     }
 
     public User getByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(IllegalStateException::new);
+        return userRepository.findByEmail(email).orElseThrow(NotFoundException::new);
     }
 
 

@@ -165,6 +165,7 @@ public class ExpertController {
     }
 
 
+    /*
     @DeleteMapping("/experts/{id}")
     public String delete(@ModelAttribute("user") User user,
                          @PathVariable UUID id) {
@@ -173,6 +174,7 @@ public class ExpertController {
 
         return "redirect:/experts";
     }
+    */
 
 
     @GetMapping("/experts/add")
@@ -190,6 +192,7 @@ public class ExpertController {
                       RedirectAttributes attributes) {
         if (bindingResult.hasErrors()) {
             getErrors(bindingResult).forEach(attributes::addFlashAttribute);
+            attributes.addFlashAttribute("expert", expertDto);
             return "redirect:/experts/add";
         }
 
@@ -217,6 +220,4 @@ public class ExpertController {
         model.addAttribute("categories", ExpertScienceCategoryDto.values());
         model.mergeAttributes(getErrors(bindingResult));
     }
-
-
 }

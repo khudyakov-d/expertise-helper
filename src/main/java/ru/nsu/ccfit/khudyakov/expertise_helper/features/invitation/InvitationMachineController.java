@@ -25,9 +25,7 @@ import java.util.UUID;
 @Controller
 @RequiredArgsConstructor
 public class InvitationMachineController {
-
     private final UserService userService;
-
     private final InvitationMachineService invitationMachineService;
 
     @GetMapping("projects/applications/{applicationId}/invitations")

@@ -11,7 +11,6 @@ import static java.nio.file.Paths.get;
 
 
 public class LocalFileManager implements FileManager {
-
     private static final String RESOURCES_DIR = get(System.getProperty("user.dir"), "files").toString();
 
     @Override
@@ -20,14 +19,12 @@ public class LocalFileManager implements FileManager {
             Path path = get(RESOURCES_DIR, relativePath);
             Files.createDirectories(path.getParent());
             File file = new File(path.toString());
-
             if (!file.exists()) {
                 if (!file.createNewFile()) {
                     throw new IllegalStateException();
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
             throw new IllegalStateException(e);
         }
     }
@@ -44,7 +41,6 @@ public class LocalFileManager implements FileManager {
             createDirectories(absolutePath.getParent());
             write(absolutePath, content);
         } catch (IOException e) {
-            e.printStackTrace();
             throw new IllegalArgumentException();
         }
     }
@@ -53,7 +49,7 @@ public class LocalFileManager implements FileManager {
         try {
             Files.delete(get(RESOURCES_DIR, relativePath));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException();
         }
     }
 

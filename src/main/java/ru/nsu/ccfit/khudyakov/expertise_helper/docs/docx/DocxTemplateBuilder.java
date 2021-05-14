@@ -15,18 +15,14 @@ import static org.docx4j.Docx4J.*;
 
 @RequiredArgsConstructor
 public abstract class DocxTemplateBuilder<T> {
-
     private final File template;
-
     private final FileManager fileManager;
-
     protected abstract Document initDocument(T data);
 
     private WordprocessingMLPackage createTemplate() {
         try {
             return load(template);
         } catch (Docx4JException e) {
-            e.printStackTrace();
             throw new IllegalStateException(e);
         }
     }
@@ -35,7 +31,6 @@ public abstract class DocxTemplateBuilder<T> {
         try {
             Docx4J.bind(template, document, FLAG_BIND_INSERT_XML | FLAG_BIND_BIND_XML | FLAG_BIND_REMOVE_SDT);
         } catch (Docx4JException e) {
-            e.printStackTrace();
             throw new IllegalStateException(e);
         }
     }
@@ -65,5 +60,4 @@ public abstract class DocxTemplateBuilder<T> {
             throw new IllegalStateException(e);
         }
     }
-
 }

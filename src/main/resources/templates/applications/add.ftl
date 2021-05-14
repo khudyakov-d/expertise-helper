@@ -6,7 +6,7 @@
 
     <div class="container d-flex">
         <div class="row justify-content-center align-self-center w-100">
-            <div class="col-sm-8 col-lg-6">
+            <div class="col-sm-8 col-lg-6 border rounded p-2">
                 <form action="/projects/${projectId}/applications"
                       method="post"
                       class="form-group"
@@ -26,6 +26,7 @@
                             <input id="topicNumber"
                                    type="text"
                                    name="topicNumber"
+                                   value="${(application.topicNumber)!}"
                                    class="form-control ${(topicNumberError??)?string('is-invalid', '')}"/>
                             <div class="invalid-feedback">${topicNumberError!}</div>
                         </div>
@@ -37,6 +38,7 @@
                             <input id="topic"
                                    type="text"
                                    name="topic"
+                                   value="${(application.topic)!}"
                                    class="form-control ${(topicError??)?string('is-invalid', '')}"/>
                             <div class="invalid-feedback">${topicError!}</div>
                         </div>
@@ -48,6 +50,7 @@
                             <input id="organization"
                                    type="text"
                                    name="organization"
+                                   value="${(application.organization)!}"
                                    class="form-control ${(organizationError??)?string('is-invalid', '')}"/>
                             <div class="invalid-feedback">${organizationError!}</div>
                         </div>
@@ -59,6 +62,7 @@
                             <input id="pagesCount"
                                    type="number"
                                    name="pagesCount"
+                                   value="${(application.pagesCount)!}"
                                    class="form-control ${(pagesCountError??)?string('is-invalid', '')}"/>
                             <div class="invalid-feedback">${pagesCountError!}</div>
                         </div>
@@ -67,7 +71,7 @@
                     <div class="form-group">
                         <label>Документ заявки</label>
                         <input type="file"
-                               class="form-control-file ${(applicationDocumentError??)?string('is-invalid', '')}"
+                               class="form-control ${(applicationDocumentError??)?string('is-invalid', '')}"
                                name="applicationDocument">
                         <div class="invalid-feedback">${applicationDocumentError!}</div>
                     </div>

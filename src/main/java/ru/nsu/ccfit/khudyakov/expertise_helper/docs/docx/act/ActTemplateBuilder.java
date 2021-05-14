@@ -25,7 +25,6 @@ public class ActTemplateBuilder extends DocxTemplateBuilder<Act> {
             jaxbMarshaller = jaxbContext.createMarshaller();
             jaxbMarshaller.setProperty(JAXB_FORMATTED_OUTPUT, true);
         } catch (JAXBException e) {
-            e.printStackTrace();
             throw new IllegalStateException(e);
         }
     }
@@ -40,7 +39,6 @@ public class ActTemplateBuilder extends DocxTemplateBuilder<Act> {
 
             return doc;
         } catch (ParserConfigurationException | JAXBException e) {
-            e.printStackTrace();
             throw new IllegalStateException(e);
         }
     }
